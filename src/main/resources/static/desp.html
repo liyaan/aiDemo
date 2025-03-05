@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.css" rel="stylesheet" />
+		<script src="https://unpkg.com/marked/marked.min.js"></script>
+		<script src="https://cdn.bootcss.com/marked/0.8.1/marked.min.js"></script>
+	</head>
+
+	<body>
+		<script src="js/mui.js"></script>
+		<script type="text/javascript">
+			mui.init();
+		</script>
+		
+		<div class="mui-input-row" style="margin-top: 1.25rem; width: 90%; margin-left: auto;margin-right:auto;">
+			<input type="search" style="  height: 2.5rem; " id="input_value"  placeholder="请输入要搜索的内容">
+		</div>
+		<div class="mui-card-content" style="margin-left: 5%">
+			<button type="button" class="mui-btn mui-btn-blue" style="margin:0rem" id="clicksend">生成文本</button>
+			<button type="button" class="mui-btn mui-btn-blue" style="margin:0rem" id="clickimage">生成图片</button>
+		</div>
+		<div  style="margin-top: 1.875rem; margin-left: 1.25rem; margin-right: 1.25rem; color: #222222" id="content_value" >
+<!--			<textarea name="text" id="content_value" cols="30" rows="30"></textarea>-->
+		</div>
+		
+		<script>
+			mui('.mui-card-content').on('tap','#clicksend',function(event){
+				send(0);
+			})
+			mui('.mui-card-content').on('tap','#clickimage',function(event){
+
+				send(1);
+
+			})
+			function send(type){
+				const input_value = document.getElementById("input_value");
+				let url = '';
+				if (type==0){
+					url = "http://hz5bh7.natappfree.cc/ai/chat?message=";
+				}else if (type==1){
+					url = "http://hz5bh7.natappfree.cc/ai/chatImage?message="
+				}
+				//console.log(input_value.value); //帮我写一篇关于桂林风景的作文
+				const xhr = new XMLHttpRequest();
+				xhr.open("get", url+input_value.value, true);
+				xhr.onload = function () {
+					const contentDIV = document.getElementById("content_value");
+					contentDIV.innerHTML = "";
+					if (type==0){
+						contentDIV.innerHTML  = marked(this.responseText);
+					}else if (type==1){
+						const data = JSON.parse(this.responseText);
+						const img = document.createElement('img');
+						img.src = data["images"][0]["url"];
+						img.alt = data["images"][0]["url"];
+						img.width = 720;
+						img.height = 1280;
+						contentDIV.appendChild(img);
+						console.log(data["images"][0]["url"]);
+					}
+
+				};
+				xhr.onerror = function () {
+				    alert('error making the request.');
+				};    
+				xhr.send();        
+			}
+		</script>
+	</body>
+
+</html>
